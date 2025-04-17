@@ -1,0 +1,4 @@
+Traceback (most recent call last):
+  File "C:\Users\shuta\OneDrive\Desktop\Code\ADK_study\test.py", line 2, in <module>
+    import google.generativeai as genai
+ModuleNotFoundError: No module named 'google.generativeai'

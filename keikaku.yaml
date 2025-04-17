@@ -1,0 +1,148 @@
+# C:\Users\shuta\OneDrive\Desktop\Code\ADK_study\keikaku.yaml
+project: "Outbound AI SDR Core (ADK × Supabase)"
+version: "v2.2-2025‑04‑17"
+
+purpose:
+  - "住宅診断アポイントメントを獲得するアウトバウンド特化型 AI SDR の MVP を構築し、\
+     人間の優秀なアポインター並みの対話品質を実現する。"
+  - "対話品質 > 拡張性 を優先し、すべての文面は Supabase 側で管理。"
+
+tech_stack:
+  dialogue_engine: "Google Agent Development Kit (ADK) 0.3.*"
+  llm:
+    audio_mode: "gemini-2.0-flash-live-001"
+    text_mode:  "gemini-2.0-flash"
+  stt:
+    engine: "faster-whisper-streaming"
+    model:  "large-v3"
+    partial_chunk_sec: 0.3
+  tts:
+    engine: "google-cloud-texttospeech"
+    voice:  "ja-JP-Chirp3-HD-Leda"
+    stream_chunk_bytes: 131072
+  audio_io:
+    lib:        "sounddevice"
+    sample_hz:  48000
+    channels:   1
+  database: "Supabase (PostgreSQL + Storage)"
+  monitoring: "prometheus_client + Grafana"
+  runtime:
+    api:  "FastAPI + SSE (services/server.py)"
+    ui:   "Developer UI (adk web) + Web/CLI clients"
+    cors:
+      allow_origins:
+        - "http://localhost:3000"
+        - "http://127.0.0.1:5500"
+
+directories:
+  agents:
+    - coordinator.py
+    - greeting.py
+    - dm_check.py
+    - renovation_q.py
+    - qualify.py
+    - objection.py
+    - faq.py
+    - appointment.py
+    - prep_remind.py
+    - followup.py
+  tools:
+    - supabase_client.py
+    - objection_classifier.py
+    - sentiment.py
+  services:
+    - stt.py
+    - tts.py
+    - audio_io.py
+    - server.py
+  web_client:
+    - index.html
+    - app.js
+  metrics:
+    - kpi.py
+  config:
+    - model.yaml
+    - .env.template
+    - .env.dev
+    - .env.prod
+  root_files:
+    - main.py
+    - README.md
+    - requirements.txt
+    - tests/
+
+supabase_tables:
+  scripts:
+    description: "Jinja2 テンプレ + variables JSON"
+  objection_handlers:
+    description: "agree_template, alpha_style, priority"
+  knowledge:
+    description: "FAQ / ペルソナ / ガイドライン"
+  customers:
+    add_columns:
+      - builder_name:      text
+      - construction_year: integer
+  call_logs:
+    add_columns:
+      - interrupt_count:   integer
+  appointments:
+    add_columns:
+      - prep_instructions_sent: boolean
+
+conversation_flow_mermaid: |
+  flowchart TD
+      Greeting --> DMCheck
+      DMCheck --> RenovationQ
+      RenovationQ --> Qualify
+      Qualify --> C{Objection?}
+      C -- Yes --> ObjectionAgent
+      C -- No --> Appointment
+      Appointment --> PrepRemind
+      PrepRemind --> FollowUp
+
+objection_logic:
+  generation_prompt: |
+    あなたはトップセールスです。相手の断り文句を分類し、
+    {"agree":"短い同意語","alpha":"20字以内の一言"} を JSON で出力してください。
+    「いらない」をそのまま繰り返さず、会話を継続させるニュアンスに。
+  types:
+    - busy
+    - no_need
+    - why_free
+    - where_calling_from
+    - bankruptcy_reason
+
+api_endpoints:
+  POST /chat/{session_id}: "ユーザー発話 → Runner → SSE ストリーム"
+  GET  /events/{session_id}: "Developer UI 用 EventSource"
+  GET  /metrics: "Prometheus メトリクス公開"
+
+env_keys:
+  mandatory:
+    - SUPABASE_URL
+    - SUPABASE_SERVICE_KEY
+    - GOOGLE_TTS_PROJECT
+    - GOOGLE_TTS_REGION
+  dev_env: ".env.dev"
+  prod_env: ".env.prod"
+
+setup_commands: |
+  python -m venv .venv && source .venv/bin/activate
+  pip install --upgrade pip wheel
+  pip install google-adk>=0.3,<0.4 fastapi uvicorn[standard] aiohttp \
+              supabase sounddevice simpleaudio faster-whisper ctranslate2 torch \
+              google-cloud-texttospeech Jinja2 prometheus_client python-dotenv requests
+  gcloud auth application-default login
+  export GOOGLE_APPLICATION_CREDENTIALS=$PWD/config/sa.json
+  cp config/.env.dev .env
+
+run_commands:
+  dev: "uvicorn services.server:app --reload --port 8000 & adk web"
+  cli: "python main.py --session $(uuidgen)"
+  web: "open web_client/index.html"
+
+notes:
+  - "文面はすべて Supabase DB から取得し、コードにハードコードしない。"
+  - "Whisper large-v3はOOM時small-esへ自動フォールバック。"
+  - "ErrorEventは SSE で Developer UI に表示。"
+  - "拡張はすべてDB操作だけで実現可能。"

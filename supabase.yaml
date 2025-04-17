@@ -1,0 +1,153 @@
+customers:
+columns:
+- name: id
+type: uuid
+constraints: primary key
+- name: customer_type
+type: text
+- name: company_name
+type: text
+- name: contact_name
+type: text
+constraints: not null
+- name: phone
+type: text
+constraints: not null
+- name: email
+type: text
+- name: address
+type: text
+- name: postal_code
+type: text
+- name: industry
+type: text
+- name: age
+type: integer
+- name: gender
+type: text
+- name: preferences
+type: jsonb
+- name: notes
+type: text
+- name: created_at
+type: timestamptz
+- name: updated_at
+type: timestamptz
+
+knowledge:
+columns:
+- name: id
+type: bigint
+constraints: primary key
+- name: category
+type: text
+constraints: not null
+- name: title
+type: text
+constraints: not null
+- name: content
+type: text
+constraints: not null
+- name: keywords
+type: text[]
+- name: importance
+type: integer
+- name: created_at
+type: timestamptz
+- name: updated_at
+type: timestamptz
+- name: embedding
+type: vector(1536)
+
+scripts:
+columns:
+- name: id
+type: uuid
+constraints: primary key
+- name: name
+type: text
+constraints: not null
+- name: category
+type: text
+constraints: not null
+- name: target_type
+type: text
+constraints: not null
+- name: content
+type: text
+constraints: not null
+- name: variables
+type: jsonb
+- name: created_at
+type: timestamptz
+- name: updated_at
+type: timestamptz
+
+objection_handlers:
+columns:
+- name: id
+type: uuid
+constraints: primary key
+- name: objection_type
+type: text
+constraints: not null
+- name: target_type
+type: text
+constraints: not null
+- name: response_content
+type: text
+constraints: not null
+- name: priority
+type: integer
+- name: created_at
+type: timestamptz
+- name: updated_at
+type: timestamptz
+
+call_logs:
+columns:
+- name: id
+type: uuid
+constraints: primary key
+- name: customer_id
+type: uuid
+constraints: foreign key → customers.id
+- name: start_time
+type: timestamptz
+- name: end_time
+type: timestamptz
+- name: duration
+type: integer
+- name: result
+type: text
+- name: transcript
+type: text
+- name: notes
+type: text
+- name: created_at
+type: timestamptz
+
+appointments:
+columns:
+- name: id
+type: uuid
+constraints: primary key
+- name: customer_id
+type: uuid
+constraints: foreign key → customers.id
+- name: date
+type: date
+constraints: not null
+- name: time
+type: time
+constraints: not null
+- name: location
+type: text
+- name: status
+type: text
+- name: notes
+type: text
+- name: created_at
+type: timestamptz
+- name: updated_at
+type: timestamptz
