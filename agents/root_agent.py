@@ -2,9 +2,9 @@ from google.adk.agents.llm_agent import LlmAgent
 
 # テキスト用エージェント
 root_agent = LlmAgent(
-    model='gemini-2.0-flash',
-    name='text_agent',
-    instruction='テキスト会話用のエージェントです。'
+    model='gemini-2.0-flash-live-001',
+    name='audio_text_agent',
+    instruction='日本語で丁寧に答えてください。'
 )
 
 # 音声用エージェント（必要な箇所でimportして使う）
