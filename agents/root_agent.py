@@ -14,6 +14,12 @@ TextAgent = LlmAgent(
     instruction='テキスト会話用のエージェントです。'
 )
 
+root_agent = LlmAgent(
+    model='gemini-2.0-flash',
+    name='text_agent',
+    instruction='テキスト会話用のエージェントです。'
+)
+
 class RootAgent:
     def __init__(self, audio_agent, text_agent):
         self.audio_agent = audio_agent
@@ -24,6 +30,4 @@ class RootAgent:
         if input_type == 'audio':
             return self.audio_agent(*args, **kwargs)
         else:
-            return self.text_agent(*args, **kwargs)
-
-root_agent = RootAgent(AudioAgent, TextAgent) 
+            return self.text_agent(*args, **kwargs) 
