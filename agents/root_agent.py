@@ -1,23 +1,17 @@
 from google.adk.agents.llm_agent import LlmAgent
 
-# 音声用エージェント
-AudioAgent = LlmAgent(
-    model='gemini-2.0-flash-live-001',
-    name='audio_agent',
-    instruction='音声会話用のエージェントです。'
-)
-
 # テキスト用エージェント
-TextAgent = LlmAgent(
-    model='gemini-2.0-flash',
-    name='text_agent',
-    instruction='テキスト会話用のエージェントです。'
-)
-
 root_agent = LlmAgent(
     model='gemini-2.0-flash',
     name='text_agent',
     instruction='テキスト会話用のエージェントです。'
+)
+
+# 音声用エージェント（必要な箇所でimportして使う）
+audio_agent = LlmAgent(
+    model='gemini-2.0-flash-live-001',
+    name='audio_agent',
+    instruction='音声会話用のエージェントです。'
 )
 
 class RootAgent:
