@@ -5,4 +5,4 @@ class GreetingAgent:
         self.client = SupabaseClient()
 
     async def handle(self, session_id: str, text: str) -> str:
-        return self.client.get_script('greeting')
+        return self.client.get_script("greeting")

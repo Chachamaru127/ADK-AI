@@ -5,4 +5,4 @@ class FollowUpAgent:
         self.client = SupabaseClient()
 
     async def handle(self, session_id: str, text: str) -> str:
-        return self.client.get_script('followup')
+        return self.client.get_script("followup")

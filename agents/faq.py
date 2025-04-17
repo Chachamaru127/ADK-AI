@@ -5,4 +5,5 @@ class FAQAgent:
         self.client = SupabaseClient()
 
     async def handle(self, session_id: str, text: str) -> str:
-        faqs=self.client.search_faq(text); return '\n'.join(faqs)
+        faqs = self.client.search_faq(text)
+        return "\n".join(faqs)

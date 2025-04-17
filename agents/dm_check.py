@@ -5,4 +5,4 @@ class DMCheckAgent:
         self.client = SupabaseClient()
 
     async def handle(self, session_id: str, text: str) -> str:
-        return self.client.get_script('dm_check')
+        return self.client.get_script("dm_check")

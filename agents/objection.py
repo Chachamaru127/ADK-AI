@@ -5,4 +5,4 @@ class ObjectionAgent:
         self.client = SupabaseClient()
 
     async def handle(self, session_id: str, text: str) -> str:
-        return self.client.get_objection('no_need', 'default')
+        return self.client.get_objection(text, "default")
